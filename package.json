@@ -1,6 +1,7 @@
 {
   "name": "wpsync",
   "version": "0.1.0",
+  "description": "Monofunctional synchronizer for WordPress",
   "main": "src/index.js",
   "author": "Taro Hanamura <m@hanamurataro.com> (http://hanamurataro.com/)",
   "license": "MIT",

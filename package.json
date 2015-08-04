@@ -5,6 +5,9 @@
   "main": "src/index.js",
   "author": "Taro Hanamura <m@hanamurataro.com> (http://hanamurataro.com/)",
   "license": "MIT",
+  "keywords": [
+    "wordpress"
+  ],
   "dependencies": {
     "chalk": "1.0.0",
     "js-yaml": "3.3.1",
@@ -15,5 +18,13 @@
     "tmp": "0.0.26",
     "tv4": "1.1.12",
     "yargs": "3.12.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/hanamura/wpsync.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hanamura/wpsync/issues"
+  },
+  "homepage": "https://github.com/hanamura/wpsync#readme"
 }

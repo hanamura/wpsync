@@ -5,6 +5,9 @@
   "main": "src/index.js",
   "author": "Taro Hanamura <m@hanamurataro.com> (http://hanamurataro.com/)",
   "license": "MIT",
+  "bin": {
+    "wpsync": "./bin/wpsync"
+  },
   "keywords": [
     "wordpress"
   ],

@@ -1,0 +1,101 @@
+#!/usr/bin/env node
+
+var chalk  = require('chalk');
+var fs     = require('fs');
+var mkdirp = require('mkdirp');
+var path   = require('path');
+var spawn  = require('child_process').spawn;
+var tmp    = require('tmp');
+var tv4    = require('tv4');
+var yaml   = require('js-yaml');
+
+var argv = require('yargs')
+  .usage('Usage: $0 source destination [-s syncfile] [-c cache-dir] [-f]')
+  .demand(2)
+  .option('s', {
+    alias:    'syncfile',
+    default:  'wpsync.yml',
+    describe: 'Syncfile path.',
+  })
+  .option('c', {
+    alias:    'cache-dir',
+    describe: 'Rsync cache directory.',
+  })
+  .option('f', {
+    alias:    'force',
+    type:     'boolean',
+    default:  false,
+    describe: 'If not specified, executes in dry-run mode.',
+  })
+  .argv;
+
+var commands = require('../src');
+var schema   = require('../schema/items');
+
+// read syncfile
+// =============
+
+var data = yaml.safeLoad(fs.readFileSync(path.resolve(process.cwd(), argv.s)));
+
+if (!tv4.validate(data, schema)) {
+  throw new Error(tv4.error.message);
+}
+
+var map = data.reduce(function(map, item) {
+  map[item.name] = item;
+  return map;
+}, {});
+
+var src = map[argv._[0]];
+var dst = map[argv._[1]];
+
+if (!src.readable) {
+  throw new Error(src.name + ' is not readable');
+}
+if (!dst.writable) {
+  throw new Error(dst.name + ' is not writable');
+}
+if (src.name === dst.name) {
+  throw new Error('targets duplicate');
+}
+
+// create command
+// ==============
+
+var tmpDir;
+if (argv.c) {
+  tmpDir = {name: path.resolve(process.cwd(), argv.c), removeCallback: function() {}};
+  mkdirp.sync(tmpDir.name);
+} else {
+  tmpDir = tmp.dirSync();
+}
+var upCommand = commands.uploads(src, dst, !argv.f, tmpDir.name);
+var dbCommand = commands.database(src, dst);
+
+// logging
+// =======
+
+console.log('source:           ' + chalk.white.bgBlue(src.name));
+console.log('destination:      ' + chalk.white.bgBlue(dst.name));
+console.log('uploads command:  ' + chalk.gray(upCommand));
+console.log('database command: ' + chalk.gray(dbCommand));
+
+// execute
+// =======
+
+var sh;
+if (argv.f) {
+  sh = spawn('sh', ['-c', upCommand + '; ' + dbCommand]);
+} else {
+  sh = spawn('sh', ['-c', upCommand]);
+}
+sh.stdout.pipe(process.stdout);
+sh.stderr.pipe(process.stderr);
+sh.on('close', function(code) {
+  if (code) {
+    console.log(chalk.red('Failed syncing. (' + (argv.f ? 'Force' : 'Dry Run') + ')'));
+  } else {
+    console.log(chalk.green('Successfully synced. (' + (argv.f ? 'Force' : 'Dry Run') + ')'));
+  }
+  process.exit(code);
+});

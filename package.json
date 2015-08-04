@@ -1,0 +1,18 @@
+{
+  "name": "wpsync",
+  "version": "0.1.0",
+  "main": "src/index.js",
+  "author": "Taro Hanamura <m@hanamurataro.com> (http://hanamurataro.com/)",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "1.0.0",
+    "js-yaml": "3.3.1",
+    "lodash.assign": "3.2.0",
+    "lodash.union": "3.1.0",
+    "mkdirp": "0.5.1",
+    "shell-escape": "0.2.0",
+    "tmp": "0.0.26",
+    "tv4": "1.1.12",
+    "yargs": "3.12.0"
+  }
+}

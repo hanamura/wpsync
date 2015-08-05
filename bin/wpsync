@@ -42,12 +42,22 @@ if (!tv4.validate(data, schema)) {
 }
 
 var map = data.reduce(function(map, item) {
+  if (map[item.name]) {
+    throw new Error(item.name + ' duplicates');
+  }
   map[item.name] = item;
   return map;
 }, {});
 
 var src = map[argv._[0]];
 var dst = map[argv._[1]];
+
+if (!src) {
+  throw new Error(argv._[0] + ' is not defined');
+}
+if (!dst) {
+  throw new Error(argv._[1] + ' is not defined');;
+}
 
 if (!src.readable) {
   throw new Error(src.name + ' is not readable');

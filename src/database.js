@@ -13,8 +13,8 @@ var vagrantSSH = function(dir) {
 };
 
 module.exports = function(src, dst) {
-  src = assign({port: 20}, src);
-  dst = assign({port: 20}, dst);
+  src = assign({port: 22}, src);
+  dst = assign({port: 22}, dst);
 
   var sedCommand = 'sed "s|\'' + src.url + '\'|\'' + dst.url + '\'|g"';
   var srcCommand, dstCommand;
